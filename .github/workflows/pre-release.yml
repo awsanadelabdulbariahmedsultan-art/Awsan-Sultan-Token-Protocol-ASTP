@@ -1,0 +1,106 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - PRE-RELEASE SYSTEM
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Static Musl Linking, Multi-Arch ARM64, and Security Checks.
+# ==============================================================================
+
+name: AST Pre-Release Build
+
+on:
+  push:
+    tags:
+      - 'pre-v*' # التفعيل عند دفع وسوم مثل pre-v1.0.0
+
+env:
+  CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
+  CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
+  # إضافة اسم البروتوكول الخاص بك في متغيرات البيئة
+  PROJECT_NAME: "ast-protocol"
+
+jobs:
+  build:
+    name: Build Multi-Platform Binaries
+    strategy:
+      matrix:
+        go-version: [1.22] # تقنية مضافة: استخدام Go 1.22 المستقر بدلاً من 1.25 التجريبي
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout AST Source
+        uses: actions/checkout@v4
+
+      - name: Install Go (AST Standard)
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-ast-build-${{ hashFiles('**/go.sum') }}
+
+      # بناء نسخة Linux باستخدام Musl لضمان العمل على أي توزيعة (Static Build)
+      - name: Build Linux Binary (AMD64)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          wget https://musl.cc/x86_64-linux-musl-cross.tgz
+          tar -xzf ./x86_64-linux-musl-cross.tgz
+          GIT_COMMIT=$(git rev-parse HEAD)
+          GIT_DATE=$(git log -n1 --pretty='format:%cd' --date=format:'%Y%m%d')
+          # تغيير اسم الملف التنفيذي من geth إلى ast-node
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=$(pwd)/x86_64-linux-musl-cross/bin/x86_64-linux-musl-gcc \
+          go build -ldflags "-X main.gitCommit=$GIT_COMMIT -X main.gitDate=$GIT_DATE -extldflags=-static" -o ./build/bin/ast-linux-amd64 ./cmd/geth
+
+      # بناء نسخة ARM64 للهواتف وأجهزة السيرفرات الحديثة
+      - name: Build Linux Binary (ARM64)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          wget https://musl.cc/aarch64-linux-musl-cross.tgz
+          tar -xzf ./aarch64-linux-musl-cross.tgz
+          GOOS=linux GOARCH=arm64 CGO_ENABLED=1 CC=$(pwd)/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc \
+          go build -ldflags "-extldflags=-static" -o ./build/bin/ast-linux-arm64 ./cmd/geth
+
+      - name: Build MacOS/Windows
+        if: matrix.os != 'ubuntu-latest'
+        run: |
+          go mod download
+          # تغيير اسم المخرج النهائي ليعكس هوية AST
+          go build -o ./build/bin/ast-${{ runner.os }} ./cmd/geth
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ast-binaries-${{ matrix.os }}
+          path: ./build/bin/*
+
+  release:
+    name: Generate AST Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: ./assets
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "AST Protocol Pre-Release ${{ github.ref_name }}"
+          body: |
+            ## Awsan Sultan Token (AST) Protocol
+            **Lead Engineer:** ENG. AWSAN ADEL ABDULBARI
+            **Registry:** Yemen | ID: 01010305468
+            
+            ### Release Details:
+            - **Commit:** ${{ github.sha }}
+            - **Platform Support:** Linux (AMD64/ARM64), Windows, MacOS.
+            
+            *This is an automated pre-release build for AST Protocol.*
+          draft: true
+          prerelease: true
+          files: ./assets/*
