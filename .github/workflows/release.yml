@@ -1,0 +1,91 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - OFFICIAL RELEASE SYSTEM
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Final Production Optimization & Intellectual Property Binding.
+# ==============================================================================
+
+name: AST Protocol Official Release
+
+on:
+  push:
+    tags:
+      - 'v*' # التفعيل عند إصدار نسخة رسمية مثل v1.0.0
+
+env:
+  CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
+  CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
+
+jobs:
+  build:
+    name: Build Production Binaries
+    strategy:
+      matrix:
+        go-version: [1.22] # تقنية مضافة: استخدام الإصدار المستقر 1.22 لضمان أمان البروتوكول
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout AST Source
+        uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Build Logic for AST
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          # تحديث تقني: استخدام روابط Musl الرسمية والمستقرة لضمان الربط الساكن (Static Linking)
+          wget https://musl.cc
+          tar -xzf ./x86_64-linux-musl-cross.tgz
+          GIT_COMMIT=$(git rev-parse HEAD)
+          # بناء الملف التنفيذي باسم البروتوكول الخاص بك
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=$(pwd)/x86_64-linux-musl-cross/bin/x86_64-linux-musl-gcc \
+          go build -ldflags "-X main.gitCommit=$GIT_COMMIT -extldflags=-static" -o ./build/bin/ast-node-linux ./cmd/geth
+
+      - name: Build MacOS/Windows
+        if: matrix.os != 'ubuntu-latest'
+        run: |
+          go mod download
+          go build -o ./build/bin/ast-node-${{ runner.os }} ./cmd/geth
+
+      - name: Upload Production Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ast-prod-${{ matrix.os }}
+          path: ./build/bin/*
+
+  release:
+    name: Finalize Official Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Release Version
+        run: echo "REL_VER=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Download All Binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: ./assets
+          merge-multiple: true
+
+      - name: Generate AST Official Changelog
+        id: changelog
+        run: |
+          chmod +x ./.github/generate_change_log.sh
+          # تقنية مضافة: دمج بيانات الملكية الفكرية في سجل التغييرات تلقائياً
+          ./.github/generate_change_log.sh ${{ env.REL_VER }} > ./RELEASE_NOTES.md
+
+      - name: Create Official GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.REL_VER }}
+          name: "AST Protocol Official Release ${{ env.REL_VER }}"
+          body_path: ./RELEASE_NOTES.md
+          draft: false
+          prerelease: false # نسخة مستقرة نهائية
+          files: |
+            ./assets/*
+            ./mainnet.zip
+            ./testnet.zip
