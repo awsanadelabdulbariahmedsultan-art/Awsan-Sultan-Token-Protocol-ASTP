@@ -1,0 +1,27 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL)
+# INTELLECTUAL & SOFTWARE PROPERTY RIGHTS
+# ==============================================================================
+# Lead Engineer: ENG.AWSAN ADEL ABDULBARI AHMED SULTAN
+# Country: YEMEN | ID: 01010305468
+# Contact: +967777852433 | Email: AWSAN.SULTAN@GMAIL.COM
+# LinkedIn: https://www.linkedin.com/in/awsan-adel-abdulbari-ahmed-sultan-8aa5a1a9
+# ==============================================================================
+# NOTE: This protocol has been updated with core data and technologies 
+# sourced from the BSC (BNB Smart Chain) repository to maintain compatibility 
+# and integrity while establishing AST Protocol's unique infrastructure.
+# ==============================================================================
+
+# Global Ownership
+*       @AwsanSultan
+
+# Module Specific Ownership (Inherited from BSC Architecture)
+accounts/   ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+core/       ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+crypto/     ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+eth/        ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+p2p/        ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+rpc/        ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+params/     ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+trie/       ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
+beacon/     ENG.AWSAN ADEL ABDULBARI AHMED SULTAN <AWSAN.SULTAN@GMAIL.COM>
