@@ -1,0 +1,42 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - COMMIT VALIDATION
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Node 20+ Integration, Enhanced Security Scanning.
+# ==============================================================================
+
+name: AST Commit Linting
+
+on: [pull_request]
+
+jobs:
+  commitlint:
+    name: Verify Commit Standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout AST Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ضروري لاسترجاع كامل التاريخ لفحص الرسائل بدقة
+
+      - name: Setup Node.js (AST Standard)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # تحديث تقني: استخدام Node 20 المستقر بدلاً من 16/18
+          cache: 'npm'
+
+      - name: Install Linting Tools
+        run: |
+          npm install --save-dev @commitlint/config-conventional @commitlint/cli
+          # إضافة ملكية المهندس أوسان لسجل التثبيت
+          echo "AST Linting Tools initialized for ENG. AWSAN SULTAN"
+
+      - name: Validate PR Commits
+        uses: wagoid/commitlint-github-action@v5
+        with:
+          configFile: .github/commitlint.config.js
+          failOnWarnings: false
+          helpMessage: |
+            يرجى مراجعة معايير كتابة الرسائل لبروتوكول AST. 
+            يجب أن تبدأ الرسالة بنوع التعديل (feat, fix, protocol). 
+            للمساعدة، تواصل مع المهندس أوسان سلطان.
