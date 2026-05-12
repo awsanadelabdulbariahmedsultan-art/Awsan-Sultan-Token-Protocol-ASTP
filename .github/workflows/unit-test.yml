@@ -1,0 +1,57 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - UNIT TESTING SUITE
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Race Detection, Go 1.22 Stability, and Security Hardening.
+# ==============================================================================
+
+name: AST Unit Testing
+
+on:
+  push:
+    branches: [main, develop] # تحديث الفروع للمعايير الحديثة
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  unit-test:
+    name: Core Logic Validation
+    strategy:
+      matrix:
+        go-version: [1.21, 1.22] # تقنية مضافة: اختبار النسخ المستقرة لضمان أمان البروتوكول
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout AST Source
+        uses: actions/checkout@v4
+
+      - name: Install Go (AST Standard)
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          check-latest: true
+
+      - name: Cache Go Modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-ast-unit-${{ hashFiles('**/go.sum') }}
+
+      - name: Run AST Logic Tests
+        env:
+          CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
+          CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
+          # تقنية مضافة: تفعيل كاشف تداخل البيانات (Race Detector)
+          GOFLAGS: "-race" 
+        run: |
+          go mod download
+          # تنفيذ الاختبارات مع تقرير تفصيلي
+          go test -v ./... 
+          
+      - name: Final Integrity Check
+        if: success()
+        run: |
+          echo "Unit Tests for AST Protocol verified by ENG. AWSAN SULTAN"
