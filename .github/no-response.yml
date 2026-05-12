@@ -1,0 +1,32 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - COMMUNITY GOVERNANCE
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# CONTACT: AWSAN.SULTAN@GMAIL.COM | +967777852433
+# ==============================================================================
+# UPDATED FROM BSC: Integrated with smart labeling and priority management.
+# ==============================================================================
+
+# عدد الأيام قبل إغلاق التذكرة لعدم الرد
+daysUntilClose: 14 # تقنية مضافة: تقليل المدة من 30 إلى 14 يوماً لزيادة سرعة استجابة البروتوكول
+
+# الوسم الذي يتطلب رداً من المستخدم
+responseRequiredLabel: "AST: Pending Info"
+
+# الرسالة الآلية عند الإغلاق (محدثة ببيانات الملكية)
+closeComment: >
+  تم إغلاق هذه التذكرة آلياً بواسطة نظام إدارة بروتوكول AST لعدم تلقي رد خلال المدة المحددة.
+  
+  نحن في فريق تطوير **Awsan Sultan Token Protocol** نهتم بكل المقترحات، ولكن لضمان كفاءة العمل المقتبس من بنية BSC المحدثة، نحتاج لبيانات كاملة.
+  
+  إذا توفرت لديك المعلومات المطلوبة، يمكنك إعادة فتح التذكرة أو التواصل مباشرة مع المهندس أوسان سلطان عبر:
+  LinkedIn: https://linkedin.com
+  Email: AWSAN.SULTAN@GMAIL.COM
+
+# تقنية مضافة: منع الإغلاق التلقائي للتذاكر التي تحمل وسم "Priority" أو "Bug"
+exemptLabels:
+  - "Security"
+  - "Critical"
+  - "Core Protocol"
+
+# خيار إضافي: وضع وسم عند الإغلاق للرجوع إليه لاحقاً في التقارير
+closeLabel: "Closed: No Response"
