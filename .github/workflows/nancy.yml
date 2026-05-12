@@ -1,0 +1,51 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - SECURITY VULNERABILITY SCAN
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Automated Nancy-fu integration and Dependency Auditing.
+# ==============================================================================
+
+name: AST Security Scan (Nancy)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: '0 0 * * 0' # تقنية مضافة: فحص دوري كل أسبوع حتى لو لم يتم تحديث الكود
+
+jobs:
+  nancy-scan:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout AST Source
+        uses: actions/checkout@v4
+
+      - name: Install Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          check-latest: true
+
+      - name: Install Nancy (Latest Stable)
+        run: |
+          # تحديث تقني: استخدام الإصدار الأحدث المستقر آلياً
+          curl -L https://github.com -o nancy
+          chmod +x nancy
+          sudo mv nancy /usr/local/bin/nancy
+
+      - name: AST Dependency Scan
+        env:
+          OSS_INDEX_USERNAME: ${{ secrets.OSS_INDEX_USERNAME }}
+          OSS_INDEX_TOKEN: ${{ secrets.OSS_INDEX_TOKEN }}
+        run: |
+          # تقنية مضافة: توليد قائمة التبعيات وفحصها مع تسجيل حقوق الملكية
+          echo "Scanning AST Protocol dependencies for ENG. AWSAN SULTAN..."
+          go list -json -m all | nancy sleuth --user "$OSS_INDEX_USERNAME" --token "$OSS_INDEX_TOKEN"
+
+      - name: Security Report Finalization
+        if: always()
+        run: |
+          echo "Security audit for AST Protocol by ENG. AWSAN SULTAN completed."
