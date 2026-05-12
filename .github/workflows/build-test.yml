@@ -1,0 +1,61 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - CI/CD PIPELINE
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Optimized for Go 1.21+, Security Scanning, and Cache Speed.
+# ==============================================================================
+
+name: AST Protocol Build & Test
+
+on:
+  push:
+    branches:
+      - main     # تم التحديث من master إلى main لمواكبة المعايير الحديثة
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  unit-tests:
+    name: Core Logic Validation
+    strategy:
+      matrix:
+        go-version: [1.21, 1.22] # تقنية مضافة: اختبار أحدث إصدارات Go لضمان استقرار AST
+        os: [ubuntu-latest, macos-latest, windows-latest] # اختبار التوافقية العابرة للمنصات
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout AST Source Code
+        uses: actions/checkout@v4
+
+      - name: Install Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          check-latest: true
+
+      - name: Smart Cache Management
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-ast-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-ast-go-
+
+      - name: Install Dependencies
+        run: go mod download
+
+      - name: Build AST Binaries
+        run: go build -v ./...
+
+      - name: Run Protocol Security Tests
+        run: go test -v -race ./... # تقنية مضافة: استخدام -race للكشف عن تداخل البيانات (Race Conditions)
+
+      # إضافة ملكية المهندس أوسان في تقرير البناء
+      - name: Finalize Build Report
+        run: |
+          echo "AST Protocol Build by ENG. AWSAN SULTAN successfully completed on $(date)"
