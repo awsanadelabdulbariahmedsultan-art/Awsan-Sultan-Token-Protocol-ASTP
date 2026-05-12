@@ -1,0 +1,53 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - EVM COMPATIBILITY SUITE
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Optimized CGO flags, Go 1.22 support, and Security Hardening.
+# ==============================================================================
+
+name: AST EVM Compatibility Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  evm-test:
+    name: EVM Logic Validation
+    strategy:
+      matrix:
+        go-version: [1.21, 1.22] # تقنية مضافة: اختبار التوافق مع أحدث إصدارات Go
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout AST Source
+        uses: actions/checkout@v4
+
+      - name: Install Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          check-latest: true
+
+      - name: Cache AST Build Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-ast-evm-${{ hashFiles('**/go.sum') }}
+
+      - name: Execute EVM Integration Tests
+        env:
+          # تحديث تقني: تفعيل مكتبات التشفير المحمولة لضمان عمل AST على مختلف المعالجات
+          CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
+          CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
+          # إضافة معرف خاص للبروتوكول أثناء الاختبار
+          AST_PROTOCOL_ID: "AWSAN_SULTAN_TOKEN_TEST"
+        run: |
+          go mod download
+          cd tests && bash -x run-evm-tests.sh
+          echo "EVM Tests for AST Protocol completed successfully by ENG. AWSAN SULTAN"
