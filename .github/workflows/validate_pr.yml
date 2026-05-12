@@ -1,0 +1,40 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - PR VALIDATION SYSTEM
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Advanced Regex Validation & Structural Integrity.
+# ==============================================================================
+
+name: AST PR Format Validation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  validate-pr:
+    name: Title & Structure Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PR Title Format
+        uses: actions/github-script@v7 # تحديث تقني للإصدار v7 لضمان الأمان
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            // تقنية مضافة: فرض نمط (المجلد: الوصف) لضمان تنظيم بروتوكول AST
+            const titleRegex = /^(\w+)(\/\w+)*:\s.{5,}$/; 
+            
+            if (!titleRegex.test(title)) {
+              core.setFailed(
+                `خطأ في عنوان الطلب! يرجى الالتزام بمعايير بروتوكول AST.\n` +
+                `النمط المطلوب: [المجلد: وصف التعديل]\n` +
+                `مثال: accounts: إضافة تشفير SHA-512 للمحافظ\n` +
+                `للمساعدة، تواصل مع المهندس أوسان سلطان.`
+              );
+              return;
+            }
+            console.log('✅ PR Title format is valid for AST Protocol.');
+
+      - name: Final Approval Log
+        run: |
+          echo "PR Validation for AST Protocol processed by ENG. AWSAN SULTAN"
