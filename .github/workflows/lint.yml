@@ -1,0 +1,48 @@
+# ==============================================================================
+# AST PROTOCOL (AWSAN SULTAN TOKEN PROTOCOL) - CODE QUALITY ASSURANCE
+# OWNER: ENG. AWSAN ADEL ABDULBARI AHMED SULTAN | YEMEN
+# ==============================================================================
+# UPDATED FROM BSC: Go 1.22+, Security Linting (gosec), and Optimized CGO.
+# ==============================================================================
+
+name: AST Code Linting
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  golangci:
+    name: AST Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout AST Source
+        uses: actions/checkout@v4
+
+      - name: Install Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22' # تقنية مضافة: استخدام أحدث إصدار مستقر لتحسين جودة الكود
+          check-latest: true
+          cache: true
+
+      - name: Verify Go Modules Integrity
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum || (echo "Error: go.mod is not tidy" && exit 1)
+
+      - name: Run GolangCI-Lint (AST Security Suite)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
+          env:
+            # تحسين تقني: ضمان توافق مكتبات التشفير المحمولة أثناء الفحص
+            CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
+            CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
+        
+      - name: Final Quality Report
+        run: |
+          echo "Code Linting for AST Protocol successfully verified by ENG. AWSAN SULTAN"
